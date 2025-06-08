@@ -21,38 +21,22 @@ const login=async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials" });
         }
         const token =jwt.sign({ user:userName, role: "developer" }, process.env.JWT_SECRET, { expiresIn: '15m' })
-        const refreshToken = jwt.sign({ user: userName, role: "developer" }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
-            
-        
+       
         return res.status(200).json({ message: "Login successful", token: token });
 
     }
     if (role === "user") {
-        const hashedPassword = bcrypt.hashSync(password, 10);
-        console.log("Hashed Password:", hashedPassword);
-        console.log("UserName:", userName);
-        const user = await User.findOne({ userName:userName, password: hashedPassword });
-        if (!user) {
+        const hashedPassword = await Developer.findOne({ userName: userName }).select('password');
+        if (!hashedPassword) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
-        jwt.sign({ user:userName, role: "user" }, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
-            if (err) {
-                console.error("Error signing token:", err);
-                return res.status(500).json({ message: "Internal server error" });
-            }
-            const refreshToken = jwt.sign({ user: userName, role: "developer" }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
-            return res.status(200).json({ message: "Login successful", token: token });
-        });       
+        const isMatch = await bcrypt.compare(password, hashedPassword.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+        const token =jwt.sign({ user:userName, role: "user" }, process.env.JWT_SECRET, { expiresIn: '15m' })
+       
+        return res.status(200).json({ message: "Login successful", token: token });
     }
     return res.status(400).json({ message: "Invalid role" });
 }

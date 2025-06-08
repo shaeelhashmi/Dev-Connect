@@ -1,6 +1,5 @@
 
 import app from "./src/app.js";
-import mongoose from "./src/Configuration/DB.js";
 import dotenv from 'dotenv';
 dotenv.config();
 const PORT =  3000;
