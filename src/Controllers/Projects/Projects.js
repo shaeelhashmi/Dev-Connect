@@ -35,4 +35,19 @@ const createProject = async(req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
-export {createProject}
+const openProject = async(req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        if (!req.role || req.role !== 'developer') {
+            return res.status(403).json({ message: 'Forbidden: Only developer can view open projects' });
+        }
+        const projects = await ProjectModel.find({ status: 'open' });
+        return res.status(200).json({ message: 'Open projects retrieved successfully', projects });
+    } catch (error) {
+        console.error('Error retrieving open projects:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+export {createProject,openProject}
