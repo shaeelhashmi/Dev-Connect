@@ -14,5 +14,6 @@ const projectSchema = new Schema({
 }, {
     timestamps: true,
 });
+
 const ProjectModel = database.model('Project', projectSchema);
 export default ProjectModel;

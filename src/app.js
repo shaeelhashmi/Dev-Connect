@@ -1,8 +1,10 @@
 import express from 'express';
 import router from './Routes/AuthRoute.js';
 import projectRouter from './Routes/ProjectRoute.js';
+import BidRouter from './Routes/BidRoute.js';
 const app = express();
 app.use(express.json());
 app.use('/auth', router);
 app.use('/projects', projectRouter);
+app.use('/bids', BidRouter);
 export default app;
