@@ -1,4 +1,4 @@
-import database from "../Configuration/DB.js";
+import database from "../../Configuration/DB.js";
 const {Schema}= database
 const users= new Schema({
     userName: {
