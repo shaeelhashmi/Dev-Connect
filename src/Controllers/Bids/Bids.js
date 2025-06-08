@@ -23,7 +23,7 @@ const SetBids = async (req, res) => {
 
         const newBid = new Bids({
             projectId,
-            bidderName: user,
+            bidderName: req.user,
             bidAmount,
             message,
         });

@@ -23,7 +23,7 @@ const createProject = async(req, res) => {
             description,
             techStack,
             estimatedBudget,
-            status: 'open' // Default status
+            status: 'open' 
         });
 
         // Save the project to the database
