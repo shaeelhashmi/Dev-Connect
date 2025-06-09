@@ -1,4 +1,3 @@
-import Autheticate from '../../Middlewares/Authenticate.js';
 import ProjectModel from '../../Models/Project/ProjectModel.js';
 const createProject = async(req, res) => {
     try{

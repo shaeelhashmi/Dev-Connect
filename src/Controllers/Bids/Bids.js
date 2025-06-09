@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 const SetBids = async (req, res) => {
     try{
         const { projectId,  bidAmount, message } = req.body;
+        if (!projectId || !bidAmount || !message) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
         const project = await Project.findById(projectId);
         if (!project) {
             return res.status(404).json({ message: "Project not found." });
