@@ -31,7 +31,6 @@ const createProject = async(req, res) => {
 
         return res.status(201).json({ message: 'Project created successfully', project: newProject });
     }catch (error) {
-        console.error('Error creating project:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -46,7 +45,6 @@ const openProject = async(req, res) => {
         const projects = await ProjectModel.find({ status: 'open' });
         return res.status(200).json({ message: 'Open projects retrieved successfully', projects });
     } catch (error) {
-        console.error('Error retrieving open projects:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

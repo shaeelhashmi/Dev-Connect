@@ -8,9 +8,6 @@ const login=async (req, res) => {
     if (!userName || !password || !role) {
         return res.status(400).json({ message: "All fields are required" });
     }
-    console.log("UserName:", userName);
-    console.log("Role:", role);
-
     if (role == "developer") {
         const hashedPassword = await Developer.findOne({ userName: userName }).select('password');
         if (!hashedPassword) {
@@ -40,7 +37,7 @@ const login=async (req, res) => {
     }
     return res.status(400).json({ message: "Invalid role" });
 }
-const DeveloperSignUp=async (req, res, next) => {
+const DeveloperSignUp=async (req, res) => {
     const {userName,password,fullName}=req.body
     try {
         const existingUser = await Developer.find({ userName });
@@ -53,15 +50,13 @@ const DeveloperSignUp=async (req, res, next) => {
             password: hashedPassword,
             fullName: fullName
         });
-        await newUser.save();
-     
+        await newUser.save();  
         res.status(201).json({ message: "User created successfully" });
     } catch (error) {
-        console.error("Error during signup:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
-const UserSignUp=async (req, res, next) => {
+const UserSignUp=async (req, res) => {
     const {userName,password,fullName}=req.body
     try {
         const existingUser = await User.find({ userName });
@@ -77,7 +72,6 @@ const UserSignUp=async (req, res, next) => {
         await newUser.save();
         res.status(201).json({ message: "User created successfully" });
     } catch (error) {
-        console.error("Error during signup:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
