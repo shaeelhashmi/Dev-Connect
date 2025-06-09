@@ -9,7 +9,23 @@ const login=async (req, res) => {
         return res.status(400).json({ message: "All fields are required" });
     }
     if (role == "developer") {
-        const hashedPassword = await Developer.findOne({ userName: userName }).select('password');
+        loginUser(res,Developer,userName,password)
+        return
+    }
+    if (role === "user") {
+        loginUser(res,User,userName,password)
+        return
+    }
+    return res.status(400).json({ message: "Invalid role" });
+}
+const DeveloperSignUp=async (req, res) => {
+    signUp(req,res,Developer)
+}
+const UserSignUp=async (req, res) => {
+    signUp(req,res,User)
+}
+const loginUser=async(res,model,userName,password)=>{
+    const hashedPassword = await model.findOne({ userName: userName }).select('password');
         if (!hashedPassword) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
@@ -20,51 +36,16 @@ const login=async (req, res) => {
         const token =jwt.sign({ user:userName, role: "developer" }, process.env.JWT_SECRET, { expiresIn: '15m' })
        
         return res.status(200).json({ message: "Login successful", token: token });
-
-    }
-    if (role === "user") {
-        const hashedPassword = await Developer.findOne({ userName: userName }).select('password');
-        if (!hashedPassword) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-        const isMatch = await bcrypt.compare(password, hashedPassword.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-        const token =jwt.sign({ user:userName, role: "user" }, process.env.JWT_SECRET, { expiresIn: '15m' })
-       
-        return res.status(200).json({ message: "Login successful", token: token });
-    }
-    return res.status(400).json({ message: "Invalid role" });
 }
-const DeveloperSignUp=async (req, res) => {
+const signUp=async(req,res,model)=>{
     const {userName,password,fullName}=req.body
     try {
-        const existingUser = await Developer.find({ userName });
+        const existingUser = await model.find({ userName });
         if (existingUser.length > 0) {
             return res.status(400).json({ message: "User already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new Developer({
-            userName:userName,
-            password: hashedPassword,
-            fullName: fullName
-        });
-        await newUser.save();  
-        res.status(201).json({ message: "User created successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
-    }
-}
-const UserSignUp=async (req, res) => {
-    const {userName,password,fullName}=req.body
-    try {
-        const existingUser = await User.find({ userName });
-        if (existingUser.length > 0) {
-            return res.status(400).json({ message: "User already exists" });
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
+        const newUser = new model({
             userName:userName,
             password: hashedPassword,
             fullName: fullName
